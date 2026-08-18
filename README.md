@@ -1,70 +1,70 @@
 # restart-service-button
 
-A [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) web plugin that adds a **one-click restart-service button** to the top-right corner of the DSH web GUI, plus a settings page to reposition it.
+一个 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) Web 插件：在 DSH 网页界面的**右上角**添加一个**一键重启服务**按钮，并提供一个设置页用于调整按钮位置。
 
-Because it is a real installed web plugin (not a dynamic session plugin), the button **survives service restarts** — after a restart the button is still there and ready to use again.
+因为是正式安装的 Web 插件（不是动态会话插件），按钮**能跨服务重启存活**——重启后按钮依然在，随时可以再次使用。
 
-## Features
+## 功能
 
-- 🖱️ One-click restart of the `dsh web` backend: click once to arm ("确认重启？"), click again to confirm; the button shows "重启中…" then "请刷新页面" (please refresh) after ~2 s.
-- ⚙️ Settings page (**Settings → 重启按钮**) to adjust the button's `top` / `right` offset in pixels; changes apply immediately and are remembered in `localStorage` across restarts.
-- 🎨 Native look: styled with DSH design tokens (`--dsw-alias-*`), transparent background, subtle hover.
-- 🔒 Restart endpoint is loopback-only, so a LAN-exposed DSH web cannot be restarted remotely.
+- 🖱️ 一键重启 `dsh web` 后端：点一下进入「确认重启？」状态，再点一下确认；按钮显示「重启中…」约 2 秒后变为「请刷新页面」。
+- ⚙️ 设置页（**设置 → 重启按钮**）：以像素调整按钮的 `top` / `right` 偏移，修改立即生效，并通过 `localStorage` 记住位置（重启后不丢）。
+- 🎨 原生观感：使用 DSH 设计 token（`--dsw-alias-*`）、透明背景、轻量 hover。
+- 🔒 重启接口仅允许本机回环访问，局域网暴露的 DSH web 无法被远程触发重启。
 
-## Requirements
+## 环境要求
 
-- DSH web (the `dsh web` GUI) with the **web profile**
-- Windows is the primary, battle-tested platform; a best-effort POSIX (macOS/Linux) path is included
+- DSH web（`dsh web` 网页端），使用 **web profile**
+- **Windows 为主力且经过充分测试的平台**；附带 POSIX（macOS/Linux）尽力而为的实现
 
-## Install
+## 安装
 
 ```bash
 dsh plugin --profile web add github:<owner>/restart-service-button
 ```
 
-Or from a local checkout:
+或者从本地目录安装：
 
 ```bash
 dsh plugin --profile web add link:C:/path/to/restart-service-button
 ```
 
-Then **restart the web service** once so the plugin loads:
+然后**重启一次 web 服务**让插件加载：
 
 ```bash
 dsh web
 ```
 
-(The first restart can be triggered from the still-running GUI if a previous dynamic plugin is active.)
+（如果之前装过动态版插件，可直接用当前界面上仍存在的按钮触发第一次重启。）
 
-## Usage
+## 使用
 
-1. Open the DSH web GUI.
-2. Top-right corner: click **重启服务** → the button turns red **确认重启？** (auto-cancels after 5 s) → click again.
-3. The service restarts; the button changes to "请刷新页面" after ~2 s — click it to reload once the service is back. The button remains installed and ready.
+1. 打开 DSH 网页界面。
+2. 右上角：点击 **重启服务** → 按钮变红 **确认重启？**（5 秒无操作自动取消）→ 再点一次。
+3. 服务重启；按钮约 2 秒后变为「请刷新页面」，等服务恢复后**点击该按钮即可刷新**。按钮已持久安装，随时可用。
 
-To reposition the button: **Settings → 重启按钮** → change **距离顶部 (top)** / **距离右侧 (right)** → **恢复默认** resets to 80 / 20.
+调整位置：**设置 → 重启按钮** → 修改 **距离顶部 (top)** / **距离右侧 (right)** → **恢复默认** 重置为 80 / 20。
 
-## How it works
+## 工作原理
 
-| Side | What it does |
+| 端 | 职责 |
 | --- | --- |
-| Host (`lib/index.js`) | Registers `POST /api/restart-service-button/restart` (loopback-only). On request it spawns a **detached** process (Windows PowerShell `-EncodedCommand`, POSIX `nohup bash`) that waits ~2 s, force-kills the current `dsh web` node process (matched by command line `bin.js … web`), then relaunches `dsh web` and logs to `%TEMP%\dsh-web-restart-<timestamp>.log` (Windows) or `/tmp/dsh-web-restart-<timestamp>.log` (POSIX). |
-| Client (`lib/client.js`) | Registers the button in the `shell.overlay` slot and the position page in `settings.section`; posts to the route on confirm; keeps the position in `localStorage`. |
+| Host（`lib/index.js`） | 注册 `POST /api/restart-service-button/restart`（仅回环）。收到请求后启动**分离进程**（Windows 用 PowerShell `-EncodedCommand`，POSIX 用 `nohup bash`）：等待约 2 秒 → 强杀当前 `dsh web` node 进程（按命令行 `bin.js … web` 匹配）→ 重新拉起 `dsh web`，日志写入 `%TEMP%\dsh-web-restart-<时间戳>.log`（Windows）/ `/tmp/dsh-web-restart-<时间戳>.log`（POSIX）。 |
+| Client（`lib/client.js`） | 在 `shell.overlay` 槽位注册按钮、在 `settings.section` 注册位置页；确认后向路由发 POST；位置存 `localStorage`。 |
 
-## Notes & limitations
+## 注意事项
 
-- Restarting kills the running DSH process — any in-flight work is interrupted (sessions are persisted and recoverable).
-- Button position is stored per-browser in `localStorage` (origin-scoped); clearing browser data resets it to the default 80 / 20.
-- The POSIX restart path is best-effort and not as thoroughly tested as Windows.
+- 重启会杀掉当前 DSH 进程，正在进行的任务会被中断（会话已持久化，可恢复）。
+- 按钮位置按浏览器存于 `localStorage`（origin 级）；清浏览器数据会回到默认 80 / 20。
+- POSIX 重启路径为尽力而为，测试充分度不如 Windows。
 
-## Uninstall
+## 卸载
 
 ```bash
 dsh plugin --profile web remove restart-service-button
 ```
 
-Then restart `dsh web`.
+然后重启 `dsh web`。
 
-## License
+## 许可证
 
 [MIT](./LICENSE)
