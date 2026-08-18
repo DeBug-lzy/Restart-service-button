@@ -1,0 +1,11 @@
+# restart-service-button bundle patch: inserts the dual-face plugin row into
+# the web profile roster. Install with:
+#   dsh plugin --profile web add github:<owner>/restart-service-button
+#
+# The row is a bare plugin by package name: the host half (exports ".") runs in
+# the host process (the restart route + the actual restart), and the dsh.client
+# declaration in package.json makes the browser half (exports "./client") load
+# in the web GUI (the button + settings page).
+- insert:
+    - id: restart-service-button
+      name: 'restart-service-button'
