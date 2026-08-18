@@ -42,7 +42,7 @@ dsh web
 2. Top-right corner: click **重启服务** → the button turns red **确认重启？** (auto-cancels after 5 s) → click again.
 3. The service restarts; refresh the page when it is back. The button remains installed and ready.
 
-To reposition the button: **Settings → 重启按钮** → change **距离顶部 (top)** / **距离右侧 (right)** → **恢复默认** resets to 68 / 20.
+To reposition the button: **Settings → 重启按钮** → change **距离顶部 (top)** / **距离右侧 (right)** → **恢复默认** resets to 80 / 20.
 
 ## How it works
 
@@ -54,7 +54,7 @@ To reposition the button: **Settings → 重启按钮** → change **距离顶�
 ## Notes & limitations
 
 - Restarting kills the running DSH process — any in-flight work is interrupted (sessions are persisted and recoverable).
-- Button position is stored per-browser in `localStorage` (origin-scoped); clearing browser data resets it to the default 68 / 20.
+- Button position is stored per-browser in `localStorage` (origin-scoped); clearing browser data resets it to the default 80 / 20.
 - The POSIX restart path is best-effort and not as thoroughly tested as Windows.
 
 ## Uninstall
