@@ -40,7 +40,7 @@ dsh web
 
 1. Open the DSH web GUI.
 2. Top-right corner: click **重启服务** → the button turns red **确认重启？** (auto-cancels after 5 s) → click again.
-3. The service restarts; the button changes to "请刷新页面" after ~2 s. Refresh the page once the service is back. The button remains installed and ready.
+3. The service restarts; the button changes to "请刷新页面" after ~2 s — click it to reload once the service is back. The button remains installed and ready.
 
 To reposition the button: **Settings → 重启按钮** → change **距离顶部 (top)** / **距离右侧 (right)** → **恢复默认** resets to 80 / 20.
 
