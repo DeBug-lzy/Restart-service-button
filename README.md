@@ -6,7 +6,7 @@ Because it is a real installed web plugin (not a dynamic session plugin), the bu
 
 ## Features
 
-- 🖱️ One-click restart of the `dsh web` backend: click once to arm ("确认重启？"), click again to confirm, the page briefly disconnects and reconnects after the backend relaunches (~3–5 s).
+- 🖱️ One-click restart of the `dsh web` backend: click once to arm ("确认重启？"), click again to confirm, and the page auto-reloads as soon as the backend is back (~5–10 s).
 - ⚙️ Settings page (**Settings → 重启按钮**) to adjust the button's `top` / `right` offset in pixels; changes apply immediately and are remembered in `localStorage` across restarts.
 - 🎨 Native look: styled with DSH design tokens (`--dsw-alias-*`), transparent background, subtle hover.
 - 🔒 Restart endpoint is loopback-only, so a LAN-exposed DSH web cannot be restarted remotely.
@@ -40,7 +40,7 @@ dsh web
 
 1. Open the DSH web GUI.
 2. Top-right corner: click **重启服务** → the button turns red **确认重启？** (auto-cancels after 5 s) → click again.
-3. The service restarts; refresh the page when it is back. The button remains installed and ready.
+3. The service restarts; the page auto-refreshes when the backend is back (~5–10 s). The button remains installed and ready.
 
 To reposition the button: **Settings → 重启按钮** → change **距离顶部 (top)** / **距离右侧 (right)** → **恢复默认** resets to 80 / 20.
 
